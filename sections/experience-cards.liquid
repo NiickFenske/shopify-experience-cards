@@ -1,0 +1,246 @@
+{% comment %}
+  Section contract.
+  A homepage region with an optional heading and up to six experience cards. Cards are
+  _experience-card theme blocks, so merchants add, remove and reorder them in the theme editor.
+  @example
+  <!-- Add "Experience cards" from the theme editor's Add section menu -->
+{% endcomment %}
+
+{%- liquid
+  assign section_settings = section.settings
+
+  if section_settings.background_color != blank
+    render 'contrast-override', background_color: section_settings.background_color, section_id: section.id
+  endif
+
+  # Four columns are too tight for tablet widths, so tablet drops to two
+  assign columns_desktop = section_settings.columns_desktop
+  assign columns_tablet = columns_desktop
+  if columns_desktop == '4'
+    assign columns_tablet = '2'
+  endif
+
+  assign has_header = false
+  if section_settings.heading != blank or section_settings.subheading != blank
+    assign has_header = true
+  endif
+-%}
+
+<div
+  class="section-background{% if section_settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+></div>
+<div
+  class="
+    section section--page-width experience-cards
+    {% if section_settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
+  "
+  style="
+    --experience-cards-columns-desktop: {{ columns_desktop }};
+    --experience-cards-columns-tablet: {{ columns_tablet }};
+    --experience-cards-columns-mobile: {{ section_settings.columns_mobile }};
+    --experience-cards-image-ratio: {{ section_settings.image_ratio }};
+    --experience-cards-align: {{ section_settings.header_alignment }};
+    {% if section_settings.heading_color != blank %}--experience-cards-heading-color: {{ section_settings.heading_color }};{% endif %}
+    {% if section_settings.text_color != blank %}--experience-cards-text-color: {{ section_settings.text_color }};{% endif %}
+  "
+>
+  {%- if has_header -%}
+    <header class="experience-cards__header">
+      {%- if section_settings.heading != blank -%}
+        <h2 class="experience-cards__heading">{{ section_settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section_settings.subheading != blank -%}
+        <p class="experience-cards__subheading">{{ section_settings.subheading | escape }}</p>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div class="experience-cards__grid">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .experience-cards {
+    padding-block: var(--padding-6xl);
+    color: var(--experience-cards-text-color, var(--color-foreground));
+  }
+
+  .experience-cards__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    margin-block-end: var(--margin-4xl);
+    text-align: var(--experience-cards-align, start);
+    align-items: var(--experience-cards-align, start);
+  }
+
+  .experience-cards__heading {
+    margin: 0;
+    color: var(--experience-cards-heading-color, inherit);
+  }
+
+  .experience-cards__subheading {
+    max-width: 60ch;
+    margin: 0;
+    opacity: var(--opacity-subdued-text);
+  }
+
+  .experience-cards__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--experience-cards-columns-mobile, 1), minmax(0, 1fr));
+    gap: var(--gap-xl);
+  }
+
+  /* Cards that wrap to a new row keep equal heights */
+  .experience-cards__grid > * {
+    height: 100%;
+  }
+
+  @media screen and (min-width: 750px) {
+    .experience-cards__grid {
+      grid-template-columns: repeat(var(--experience-cards-columns-tablet, 2), minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .experience-cards__grid {
+      grid-template-columns: repeat(var(--experience-cards-columns-desktop, 3), minmax(0, 1fr));
+      gap: var(--gap-2xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Experience cards",
+  "tag": "section",
+  "class": "section-experience-cards",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "_experience-card"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Curated experiences"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Hand-picked ways to explore, learn and unwind."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Cards per row on desktop",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Cards per row on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "16 / 9", "label": "Wide" },
+        { "value": "4 / 3", "label": "Landscape" },
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "3 / 4", "label": "Portrait" }
+      ],
+      "default": "4 / 3"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Experience cards",
+      "category": "t:categories.collection",
+      "blocks": {
+        "card_1": {
+          "type": "_experience-card",
+          "settings": {
+            "eyebrow": "Outdoors",
+            "heading": "Guided coastal hikes",
+            "description": "Walk the cliffs with a local guide and finish with a seaside picnic."
+          }
+        },
+        "card_2": {
+          "type": "_experience-card",
+          "settings": {
+            "eyebrow": "Workshop",
+            "heading": "Hands-on pottery",
+            "description": "Shape and glaze your own pieces in a relaxed small-group class."
+          }
+        },
+        "card_3": {
+          "type": "_experience-card",
+          "settings": {
+            "eyebrow": "Wellness",
+            "heading": "Sunrise yoga",
+            "description": "Start the day with an easy flow, tea and good company."
+          }
+        }
+      },
+      "block_order": ["card_1", "card_2", "card_3"]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,14 @@
+# This repo tracks only the Experience Cards files.
+# The rest of the Horizon theme (Shopify, custom license) stays on disk, untracked.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/docs
+!/examples
+!/sections
+/sections/*
+!/sections/experience-cards.liquid
+!/blocks
+/blocks/*
+!/blocks/_experience-card.liquid

@@ -1,0 +1,270 @@
+{%- doc -%}
+  Renders one experience card: image, eyebrow, heading, description and an optional link.
+  Intended to be nested inside the experience-cards section, which provides the layout
+  custom properties (--experience-cards-image-ratio) this block inherits.
+
+  When a link is set, the whole card is clickable through a single anchor whose ::after
+  covers the card, so there is one tab stop per card.
+
+  @example
+  {% content_for 'blocks' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+
+  if block_settings.card_background_color != blank
+    render 'contrast-override', background_color: block_settings.card_background_color, section_id: block.id
+  endif
+
+  assign has_link = false
+  if block_settings.link != blank
+    assign has_link = true
+  endif
+
+  # With no button label, the heading itself becomes the link
+  assign heading_is_link = false
+  if has_link and block_settings.button_label == blank
+    assign heading_is_link = true
+  endif
+-%}
+
+<article
+  class="experience-card{% if block_settings.card_background_color != blank %} color-custom-{{ block.id }} experience-card--filled{% endif %}"
+  {% if block_settings.card_text_color != blank %}
+    style="--experience-card-text-color: {{ block_settings.card_text_color }};"
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  <div class="experience-card__media">
+    {%- if block_settings.image != blank -%}
+      {{
+        block_settings.image
+        | image_url: width: 1200
+        | image_tag:
+          widths: '400, 600, 800, 1200',
+          sizes: '(min-width: 750px) 50vw, 100vw',
+          loading: 'lazy',
+          class: 'experience-card__image'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'experience-card__image experience-card__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="experience-card__body">
+    {%- if block_settings.eyebrow != blank -%}
+      <p class="experience-card__eyebrow">{{ block_settings.eyebrow | escape }}</p>
+    {%- endif -%}
+
+    {%- if block_settings.heading != blank -%}
+      <h3 class="experience-card__heading">
+        {%- if heading_is_link -%}
+          <a
+            href="{{ block_settings.link }}"
+            class="experience-card__link"
+            {% if block_settings.open_in_new_tab %}
+              target="_blank" rel="noopener noreferrer"
+            {% endif %}
+          >
+            {{- block_settings.heading | escape -}}
+          </a>
+        {%- else -%}
+          {{- block_settings.heading | escape -}}
+        {%- endif -%}
+      </h3>
+    {%- endif -%}
+
+    {%- if block_settings.description != blank -%}
+      <p class="experience-card__description">{{ block_settings.description | escape | newline_to_br }}</p>
+    {%- endif -%}
+
+    {%- if has_link and block_settings.button_label != blank -%}
+      <a
+        href="{{ block_settings.link }}"
+        class="experience-card__cta experience-card__link {{ block_settings.button_style }}"
+        {% if block_settings.open_in_new_tab %}
+          target="_blank" rel="noopener noreferrer"
+        {% endif %}
+      >
+        {{- block_settings.button_label | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+</article>
+
+{% stylesheet %}
+  .experience-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--style-border-radius-md);
+    border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10));
+    color: var(--experience-card-text-color, var(--color-foreground));
+  }
+
+  .experience-card--filled {
+    background-color: var(--color-background);
+  }
+
+  .experience-card__media {
+    aspect-ratio: var(--experience-cards-image-ratio, 4 / 3);
+    overflow: hidden;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .experience-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .experience-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-sm);
+    padding: var(--padding-xl);
+  }
+
+  .experience-card__eyebrow {
+    margin: 0;
+    font-family: var(--font-subheading--family);
+    font-size: var(--font-size--xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: var(--opacity-subdued-text);
+  }
+
+  .experience-card__heading {
+    margin: 0;
+    color: var(--experience-card-text-color, inherit);
+    overflow-wrap: anywhere;
+  }
+
+  .experience-card__description {
+    margin: 0;
+    overflow-wrap: anywhere;
+    opacity: var(--opacity-subdued-text);
+  }
+
+  .experience-card__cta {
+    /* Keep the button in flow so its ::after can anchor to the card instead */
+    position: static;
+    margin-block-start: auto;
+  }
+
+  .experience-card__heading .experience-card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Stretch the single link over the whole card */
+  .experience-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .experience-card:has(.experience-card__link:focus-visible) {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .experience-card__image {
+      transition: transform var(--animation-speed, 0.25s) var(--animation-easing, ease);
+    }
+
+    .experience-card:has(.experience-card__link):hover .experience-card__image {
+      transform: scale(1.04);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Experience card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Featured"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Card heading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Share a short description of this experience."
+    },
+    {
+      "type": "header",
+      "content": "Link"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Makes the whole card clickable."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "info": "Optional. Needs a link. If left empty, the heading becomes the link."
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "button", "label": "Primary" },
+        { "value": "button-secondary", "label": "Secondary" },
+        { "value": "button-unstyled", "label": "Link" }
+      ],
+      "default": "button-secondary"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text"
+    }
+  ]
+}
+{% endschema %}
