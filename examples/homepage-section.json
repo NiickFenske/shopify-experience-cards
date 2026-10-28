@@ -1,0 +1,100 @@
+{
+  "sections": {
+    "experience_cards": {
+      "type": "experience-cards",
+      "blocks": {
+        "card_coastal": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-coastal-walks.jpg",
+            "eyebrow": "Outdoors",
+            "heading": "Coastal walks",
+            "description": "Follow quiet shoreline paths with a local guide and finish with a seaside picnic.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        },
+        "card_alpine": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-alpine-treks.jpg",
+            "eyebrow": "Adventure",
+            "heading": "Alpine day treks",
+            "description": "Small-group climbs with big views, gear included and routes for every fitness level.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        },
+        "card_forest": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-forest-trails.jpg",
+            "eyebrow": "Nature",
+            "heading": "Forest canyon trails",
+            "description": "Wander shaded gorges and streams on an easy half-day route.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        },
+        "card_golden": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-golden-hour.jpg",
+            "eyebrow": "Wellness",
+            "heading": "Golden-hour retreat",
+            "description": "Slow down with open-air yoga and a guided meditation as the sun sets.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        },
+        "card_coffee": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-coffee-tasting.jpg",
+            "eyebrow": "Tasting",
+            "heading": "Specialty coffee tasting",
+            "description": "Meet the roasters and compare single-origin brews in a relaxed cupping session.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        },
+        "card_island": {
+          "type": "_experience-card",
+          "settings": {
+            "image": "shopify://shop_images/experience-island-trips.jpg",
+            "eyebrow": "Travel",
+            "heading": "Island day trips",
+            "description": "Hop between whitewashed villages with transport, lunch and a local host included.",
+            "link": "/collections/all",
+            "button_label": "Learn more",
+            "button_style": "button-secondary"
+          }
+        }
+      },
+      "block_order": [
+        "card_coastal",
+        "card_alpine",
+        "card_forest",
+        "card_golden",
+        "card_coffee",
+        "card_island"
+      ],
+      "settings": {
+        "heading": "Curated experiences",
+        "subheading": "Hand-picked ways to explore, learn and unwind.",
+        "header_alignment": "center",
+        "columns_desktop": "3",
+        "columns_mobile": "1",
+        "image_ratio": "4 / 3"
+      }
+    }
+  },
+  "order": [
+    "experience_cards"
+  ]
+}
