@@ -13,13 +13,6 @@
     render 'contrast-override', background_color: section_settings.background_color, section_id: section.id
   endif
 
-  # Four columns are too tight for tablet widths, so tablet drops to two
-  assign columns_desktop = section_settings.columns_desktop
-  assign columns_tablet = columns_desktop
-  if columns_desktop == '4'
-    assign columns_tablet = '2'
-  endif
-
   assign has_header = false
   if section_settings.heading != blank or section_settings.subheading != blank
     assign has_header = true
@@ -35,8 +28,7 @@
     {% if section_settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
   "
   style="
-    --experience-cards-columns-desktop: {{ columns_desktop }};
-    --experience-cards-columns-tablet: {{ columns_tablet }};
+    --experience-cards-columns-desktop: {{ section_settings.columns_desktop }};
     --experience-cards-columns-mobile: {{ section_settings.columns_mobile }};
     --experience-cards-image-ratio: {{ section_settings.image_ratio }};
     --experience-cards-align: {{ section_settings.header_alignment }};
@@ -97,9 +89,10 @@
     height: 100%;
   }
 
+  /* Tablet is always two columns; three or four are too tight at this width */
   @media screen and (min-width: 750px) {
     .experience-cards__grid {
-      grid-template-columns: repeat(var(--experience-cards-columns-tablet, 2), minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
